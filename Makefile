@@ -11,11 +11,16 @@ STOPCMD  ?= jobsdone
 CMDS := -DPINGCMD=\"$(PINGCMD)\" -DSTARTCMD=\"$(STARTCMD)\" -DSTOPCMD=\"$(STOPCMD)\"
 CMDS += -DWORKING=\'+\' -DNOTWORKING=\'-\'
 
-$(PINGCMD) : workwork.c
+all: $(PINGCMD) $(STARTCMD) $(STOPCMD)
+
+$(PINGCMD): workwork.c
 	@$(CC) $(CMDS) $(CPPFLAGS) $(CFLAGS) -o $@ $^ $(LDFLAGS) $(LIBS)
 
+$(STARTCMD) $(STOPCMD): $(PINGCMD)
+	@ln -s $^ $@
+
 clean:
-	@rm -f $(PINGCMD)
+	@rm -f $(PINGCMD) $(STARTCMD) $(STOPCMD)
 
 install: $(PINGCMD)
 	@install -m 755 $(PINGCMD) $(DESTDIR)/bin
