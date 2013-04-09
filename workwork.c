@@ -82,10 +82,14 @@ int main(int argc, char **argv)
 {
     long total, start, last, now;
     char state;
+    char *statefile = STATEFILE;
 
-    if (load(STATEFILE, &total, &start, &last, &state))
+    if (argc >= 2)
+        statefile = argv[1];
+
+    if (load(statefile, &total, &start, &last, &state))
     {
-        fprintf(stderr, "error loading " STATEFILE "\n");
+        fprintf(stderr, "error loading %s\n", statefile);
         return EXIT_FAILURE;
     }
     now = time(NULL);
@@ -111,13 +115,13 @@ int main(int argc, char **argv)
         }
     }
 
-    if (save(STATEFILE, total, start, last, state))
+    if (save(statefile, total, start, last, state))
     {
-        fprintf(stderr, "error saving " STATEFILE "\n");
+        fprintf(stderr, "error saving %s\n", statefile);
         return EXIT_FAILURE;
     }
 
-    if (progname_equals(argv[0], PINGCMD) && argc == 1)
+    if (progname_equals(argv[0], PINGCMD) && argc <= 2)
         putchar(state);
     else
         printf("%.2f\n", total / 3600.0);
